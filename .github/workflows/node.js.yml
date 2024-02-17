@@ -6,20 +6,20 @@ on:
       - master
 
 jobs:
-  build-and-push:
+  build:
+
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      # Build Docker image
-      - name: Build Docker image
-        run: docker build -t avinashkhadgi/nodejs-app:latest .
-
-      # Manual Docker login
-      - name: Login to DockerHub
-        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_AUTH_TOKEN }}
-
-      # Push Docker image to DockerHub
-      - name: Push Docker image to DockerHub
-        run: docker push avinashkhadgi/nodejs-app:latest
+    - uses: actions/checkout@v2
+    - name: docker login
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        REPO_NAME: ${{secrets.REPO_NAME}}
+      run: | # log into docker hub account
+          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    - name: Build the Docker image # push The image to the docker hub
+      run: docker build .  --tag avinashkhadgi/nodejs-app:latest
+    - name: Docker Push
+      run: docker push avinashkhadgi/nodejs-app:latest
